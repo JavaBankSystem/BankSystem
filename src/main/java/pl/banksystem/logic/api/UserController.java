@@ -103,7 +103,7 @@ public class UserController {
 }
 
 @Data
-class RoleToUser {
+class       RoleToUser {
     private String username;
     private String roleName;
 }
