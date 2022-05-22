@@ -1,31 +1,36 @@
 package pl.banksystem.logic.account;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Id;
 import pl.banksystem.logic.account.transaction.Transaction;
 import pl.banksystem.logic.account.transaction.tracking.TransactionStatusType;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@EqualsAndHashCode
+@AllArgsConstructor
+
+@Entity
+@Table(name = "Account")
 
 public class Account {
     public static final Logger logger = LoggerFactory.getLogger(Account.class);
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private final int clientID;
+    private Long accountID;
+    private Long clientID;
 
-    public Account(int clientID) {
+    public Account(Long clientID) {
         this.clientID = clientID;
     }
 
-    public Account(int clientID, double balance) {
+    public Account(Long clientID, double balance) {
         this.clientID = clientID;
         this.balance = balance;
     }

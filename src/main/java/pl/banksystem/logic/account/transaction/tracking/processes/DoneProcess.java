@@ -1,5 +1,6 @@
 package pl.banksystem.logic.account.transaction.tracking.processes;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.banksystem.logic.account.transaction.Transaction;
@@ -10,12 +11,11 @@ import java.util.Date;
 
 import static pl.banksystem.logic.account.transaction.tracking.TransactionStatusType.DONE;
 
+@Slf4j
 public class DoneProcess implements StatusProcess {
-    public static final Logger logger = LoggerFactory.getLogger(DoneProcess.class);
-
     @Override
     public Transaction changeStatus(Transaction transaction) {
-        logger.info("Setting process status to DONE");
+        log.info("Setting process status to DONE");
         transaction.getTransactionHistory().add(new TransactionStatus(DONE, new Date()));
         return transaction;
     }

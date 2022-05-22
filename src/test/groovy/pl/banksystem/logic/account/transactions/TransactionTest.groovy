@@ -1,3 +1,7 @@
+package pl.banksystem.logic.account.transactions
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectWriter
 import pl.banksystem.logic.account.transaction.Transaction
 import pl.banksystem.logic.account.transaction.TransactionType
 import pl.banksystem.logic.account.transaction.tracking.TransactionStatusType
@@ -16,14 +20,15 @@ class TransactionTest extends Specification {
         t = TransactionStatusType.PENDING.addTransaction(accountID, amount, transactionType)
 
         then:
-        with(t){
-            getTransactionID() == 0
+        with(t) {
+//            getTransactionID() == 0
             getActualTransactionStatus().transactionStatusType == TransactionStatusType.PENDING
             getTransactionHistory().size() == 1
             getAccountID() == accountID
             getAmount() == amount
             getTransactionType() == transactionType
         }
+
 
 
         where:
@@ -44,7 +49,7 @@ class TransactionTest extends Specification {
         t = newTransactionStatusType.proccessTransaction(t)
 
         then:
-        with(t){
+        with(t) {
             actualTransactionStatus.transactionStatusType == newTransactionStatusType
             getTransactionHistory()
                     .stream()
@@ -54,16 +59,17 @@ class TransactionTest extends Specification {
 
 
         where:
-        newTransactionStatusType      || expectedHistory
-        TransactionStatusType.DONE || List.of("PENDING", "DONE")
+        newTransactionStatusType       || expectedHistory
+        TransactionStatusType.DONE     || List.of("PENDING", "DONE")
         TransactionStatusType.CANCELED || List.of("PENDING", "CANCELED")
     }
 
-    def 'incorrect status proccess'(TransactionStatusType newTransactionStatusType){
+    def 'incorrect status proccess'(TransactionStatusType newTransactionStatusType) {
 
         given:
         Transaction t = TransactionStatusType.PENDING.addTransaction(1, 20, TransactionType.Deposit)
         t = startingTransactionStatusType.proccessTransaction(t)
+
 
         when:
         t = newTransactionStatusType.proccessTransaction(t)
@@ -72,11 +78,11 @@ class TransactionTest extends Specification {
         t == null
 
         where:
-        startingTransactionStatusType |newTransactionStatusType
-        TransactionStatusType.CANCELED |TransactionStatusType.DONE
-        TransactionStatusType.CANCELED |TransactionStatusType.CANCELED
-        TransactionStatusType.DONE | TransactionStatusType.CANCELED
-        TransactionStatusType.DONE | TransactionStatusType.DONE
+        startingTransactionStatusType  | newTransactionStatusType
+        TransactionStatusType.CANCELED | TransactionStatusType.DONE
+        TransactionStatusType.CANCELED | TransactionStatusType.CANCELED
+        TransactionStatusType.DONE     | TransactionStatusType.CANCELED
+        TransactionStatusType.DONE     | TransactionStatusType.DONE
 
     }
 

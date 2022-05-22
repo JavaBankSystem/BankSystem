@@ -1,8 +1,7 @@
 package pl.banksystem.logic.account.transaction.tracking;
 
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.banksystem.logic.account.transaction.Transaction;
 import pl.banksystem.logic.account.transaction.TransactionStatus;
 import pl.banksystem.logic.account.transaction.TransactionType;
@@ -15,10 +14,10 @@ import java.util.Date;
 import java.util.List;
 
 @Getter
+@Slf4j
 public enum TransactionStatusType {
 
     PENDING(), CANCELED(new CanceledProcess(), new ArrayList<>(List.of(PENDING))), DONE(new DoneProcess(), new ArrayList<>(List.of(PENDING)));
-    public static final Logger logger = LoggerFactory.getLogger(TransactionStatusType.class);
     private final StatusProcess statusProcess;
     private final List<TransactionStatusType> acceptedStatus;
 
@@ -32,7 +31,7 @@ public enum TransactionStatusType {
         this.acceptedStatus = null;
     }
 
-    public Transaction addTransaction(int accountID, double amount, TransactionType transactionType) {
+    public Transaction addTransaction(Long accountID, double amount, TransactionType transactionType) {
         return new Transaction(accountID, amount, transactionType, new ArrayList<>(List.of(new TransactionStatus(PENDING, new Date()))));
     }
 
@@ -44,7 +43,7 @@ public enum TransactionStatusType {
                 .contains(previous) && !(previous.equals(DONE) || previous.equals(CANCELED))) {
             return getStatusProcess().changeStatus(transaction);
         } else {
-            logger.error("Change status problem!! Last status: {}, new TransactionStatusType: {}",
+            log.error("Change status problem!! Last status: {}, new TransactionStatusType: {}",
                     transaction.getActualTransactionStatus().getTransactionStatusType(), this);
             return null;
         }

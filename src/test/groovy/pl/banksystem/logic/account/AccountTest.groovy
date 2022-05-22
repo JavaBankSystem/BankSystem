@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectWriter
 import pl.banksystem.logic.account.Account
 import pl.banksystem.logic.account.transaction.Transaction
 import pl.banksystem.logic.account.transaction.TransactionType
@@ -6,7 +8,7 @@ import spock.lang.Specification
 
 class AccountTest extends Specification {
 
-    def 'account class test'(int clientID, double balance) {
+    def 'account class test'(Long clientID, double balance) {
 
         given:
         Account a
@@ -17,7 +19,6 @@ class AccountTest extends Specification {
         with(a) {
             getBalance() == balance
             getClientID() == clientID
-            getId() == 0
         }
 
         where:
