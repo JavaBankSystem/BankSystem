@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.banksystem.logic.account.transaction.Transaction;
 import pl.banksystem.logic.account.transaction.tracking.TransactionStatusType;
+import pl.banksystem.logic.domain.AppUser;
 
 import javax.persistence.*;
 
@@ -24,14 +25,16 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountID;
-    private Long clientID;
 
-    public Account(Long clientID) {
-        this.clientID = clientID;
+    @ManyToOne
+    private AppUser client;
+
+    public Account(AppUser client) {
+        this.client = client;
     }
 
-    public Account(Long clientID, double balance) {
-        this.clientID = clientID;
+    public Account(AppUser client, double balance) {
+        this.client = client;
         this.balance = balance;
     }
 

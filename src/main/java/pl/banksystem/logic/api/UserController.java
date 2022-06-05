@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
     @GetMapping("/users")
@@ -42,26 +42,17 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
-    @PostMapping("/user/save")
+    @GetMapping("/users/{username}")
+    public ResponseEntity<AppUser> getUser(@PathVariable String username) {
+        return ResponseEntity.ok().body(userService.getUser(username));
+    }
+
+    @PostMapping("/users")
     public ResponseEntity<AppUser> saveUser(@RequestBody AppUser user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/user/save").toUriString());
         userService.saveUser(user);
         return ResponseEntity.created(uri).body(user);
     }
-
-    @PostMapping("/role/save")
-    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/role/save").toUriString());
-        userService.saveRole(role);
-        return ResponseEntity.created(uri).body(role);
-    }
-
-    @PostMapping("/role/addtouser")
-    public ResponseEntity<AppUser> addRoleToUser(@RequestBody RoleToUser roleToUser) {
-        userService.addRoleToUser(roleToUser.getUsername(), roleToUser.getRoleName());
-        return ResponseEntity.ok().build();
-    }
-
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -102,8 +93,3 @@ public class UserController {
     }
 }
 
-@Data
-class       RoleToUser {
-    private String username;
-    private String roleName;
-}

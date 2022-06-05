@@ -38,9 +38,9 @@ public class AccountService {
         return accountRepository.findAccountByAccountID(accountID);
     }
 
-    public Optional<Account> findAccountByClientId(Long clientId) {
-        return accountRepository.findAccountByClientID(clientId);
-    }
+//    public Optional<Account> findAccountByClientId(Long clientId) {
+//        return accountRepository.findAccountByClientID(clientId);
+//    }
 
     public ResponseEntity<String> makeTransaction(Long accountID, Long transactionID) {
         Optional<Account> account = accountRepository.findAccountByAccountID(accountID);

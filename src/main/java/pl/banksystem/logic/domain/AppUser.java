@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import pl.banksystem.logic.account.Account;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +33,13 @@ public class AppUser {
     private long id;
     private String username;
     private String password;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "client")
+    @ToString.Exclude
+    private List<Account> accounts;
 
     public AppUser(String username, String password) {
         this.username = username;

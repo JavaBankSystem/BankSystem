@@ -33,12 +33,12 @@ public class AccountController {
                 .orElseGet(() -> ResponseEntity.status(NO_CONTENT).build());
     }
 
-    @GetMapping(value = "/client/{id}")
-    public ResponseEntity<Account> findAccountByClientId(@PathVariable(name = "id") Long clientId) {
-        Optional<Account> account = accountService.findAccountByClientId(clientId);
-        return account.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(NO_CONTENT).build());
-    }
+//    @GetMapping(value = "/client/{id}")
+//    public ResponseEntity<Account> findAccountByClientId(@PathVariable(name = "id") Long clientId) {
+//        Optional<Account> account = accountService.findAccountByClientId(clientId);
+//        return account.map(ResponseEntity::ok)
+//                .orElseGet(() -> ResponseEntity.status(NO_CONTENT).build());
+//    }
 
     @GetMapping(value = "/{id}/transactions")
     public ResponseEntity<List<Transaction>> getTransactionsByAccountID(@PathVariable(name = "id") Long accountID) {

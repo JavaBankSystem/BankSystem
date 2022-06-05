@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.banksystem.logic.domain.AppUser;
-import pl.banksystem.logic.domain.Role;
-import pl.banksystem.logic.repository.RoleRepository;
 import pl.banksystem.logic.repository.AppUserRepository;
 
 import javax.transaction.Transactional;
@@ -23,38 +21,20 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
+
     private final AppUserRepository appUserRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AppUser saveUser(AppUser user) {
+    public void saveUser(AppUser user) {
         log.info("Saving new user {} to the database", user.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return appUserRepository.save(user);
-    }
-
-    public Role saveRole(Role role) {
-        log.info("Saving new role {} to the database", role.getName());
-        return roleRepository.save(role);
-    }
-
-    public void addRoleToUser(String username, String roleName) {
-        log.info("Adding role {} to user {}", roleName, username);
-        AppUser user = appUserRepository.findUserByUsername(username);
-        Role role = roleRepository.findByName(roleName);
-        user.getRoles().add(role);
+        appUserRepository.save(user);
     }
 
     public AppUser getUser(String username) {
         log.info("Fetching user {}", username);
         return appUserRepository.findUserByUsername(username);
     }
-
-    public Role getRole(String roleName) {
-        log.info("Fetching role {}", roleName);
-        return roleRepository.findByName(roleName);
-    }
-
 
     public List<AppUser> getAllUsers() {
         log.info("Fetching all users");
