@@ -6,8 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.banksystem.logic.account.Account;
 import pl.banksystem.logic.domain.AppUser;
 import pl.banksystem.logic.domain.Role;
+import pl.banksystem.logic.service.AccountService;
 import pl.banksystem.logic.service.RoleService;
 import pl.banksystem.logic.service.UserService;
 
@@ -34,13 +36,15 @@ public class BankSystemApplication {
     }
 
     @Bean
-    CommandLineRunner run(UserService userService, RoleService roleService) {
+    CommandLineRunner run(UserService userService, RoleService roleService, AccountService accountService) {
         return args -> {
-            userService.saveUser(new AppUser("root", "root"));
+            AppUser user = new AppUser("root", "root");
+            userService.saveUser(user);
             roleService.saveRole(new Role("USER"));
             roleService.saveRole(new Role("ADMIN"));
             roleService.addRoleToUser("root", "USER");
             roleService.addRoleToUser("root", "ADMIN");
+            accountService.addAccount(new Account(user));
         };
     }
 }

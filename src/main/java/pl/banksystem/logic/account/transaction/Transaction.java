@@ -22,15 +22,22 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionID;
     public TransactionType transactionType;
-    @Lob
-    @ElementCollection(targetClass = TransactionStatus.class)
+    @OneToMany
     public List<TransactionStatus> transactionHistory;
     private double amount;
     private Long accountID;
+    private Long secondAccountID;
     private Date transactionDate = new Date();
 
     public Transaction(Long accountID, double amount, TransactionType transactionType) {
         this.accountID = accountID;
+        this.amount = amount;
+        this.transactionType = transactionType;
+    }
+
+    public Transaction(Long accountID, Long secondAccountID, double amount, TransactionType transactionType) {
+        this.accountID = accountID;
+        this.secondAccountID = secondAccountID;
         this.amount = amount;
         this.transactionType = transactionType;
     }
@@ -41,7 +48,6 @@ public class Transaction {
         this.transactionType = transactionType;
         this.transactionHistory = transactionHistory;
     }
-
     public TransactionStatus getActualTransactionStatus() {
         return getTransactionHistory().get(getTransactionHistory().size() - 1);
     }

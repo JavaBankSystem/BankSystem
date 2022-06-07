@@ -33,7 +33,8 @@ class AccountControllerTest extends Specification {
         def request = given(requestSpec)
 
         expect:
-        def response = request.log().all().when().get("/")
+        def response = request.log().all()
+                .when().get("/")
                 .then().log().all();
     }
 

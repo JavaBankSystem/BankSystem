@@ -20,5 +20,4 @@ class BankSystemApplicationTests extends RestAssured {
                 .when().get("/")
                 .then().log().all();
     }
-
 }
