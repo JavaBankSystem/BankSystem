@@ -3,6 +3,7 @@ package pl.banksystem.logic.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.banksystem.logic.account.loans.Loan;
@@ -21,15 +22,17 @@ import java.util.Optional;
 @Setter
 @Builder
 @NoArgsConstructor
-@EqualsAndHashCode
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "client"})
 public class Account {
     public static final Logger logger = LoggerFactory.getLogger(Account.class);
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GenericGenerator(name = "IdGenerator",
+            strategy = "pl.banksystem.logic.account.generators.IdGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IdGenerator")
     private Long accountID;
 
     @ManyToOne
@@ -56,7 +59,6 @@ public class Account {
     public void transaction(Transaction transaction) {
         if (transaction.getActualTransactionStatus().getTransactionStatusType() == TransactionStatusType.DONE) {
             switch (transaction.getTransactionType()) {
-
                 case Withdraw:
                     setBalance(getBalance() - transaction.getAmount());
                     logger.info("Current Operation: {} , Balance after transaction: {}", transaction.transactionType, getBalance());
@@ -80,10 +82,20 @@ public class Account {
                         currentLoans.remove(loan.get());
                     }
                     break;
+                case Transfer:
+                    if (Objects.equals(transaction.getSenderAccountID(), getAccountID())) {
+                        setBalance(getBalance() - transaction.getAmount());
+                        logger.info("Out-coming transfer , Balance after transfer: {}", getBalance());
+                    } else {
+                        setBalance(getBalance() + transaction.getAmount());
+                        logger.info("Incoming transfer , Balance after transfer: {}", getBalance());
+                    }
+                    break;
             }
         } else {
             logger.warn("The transaction cannot be recorded. Current status: {}"
                     , transaction.getActualTransactionStatus().getTransactionStatusType());
         }
+
     }
 }

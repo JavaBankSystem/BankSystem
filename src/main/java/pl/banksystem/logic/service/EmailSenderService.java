@@ -14,9 +14,9 @@ import java.io.File;
 @Service
 public class EmailSenderService {
     @Autowired
-    private JavaMailSender mailSender;
+    private static JavaMailSender mailSender;
 
-    public void sendMail(String toEmail,String subject,String body)
+    public static void sendMail(String toEmail,String subject,String body)
     {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("java.bank.system@gmail.com"); //Password: JavaBankSystem*

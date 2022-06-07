@@ -122,7 +122,7 @@ class TransactionControllerTest extends Specification {
         response.then().statusCode(200)
     }
 
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     def "update status correctly"(){
         given:
         def request = given(requestSpec)
@@ -140,6 +140,7 @@ class TransactionControllerTest extends Specification {
         response.then().statusCode(200)
         response.getBody().asString() == "Transaction 2 status updated to: DONE"
     }
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     def "update status - transactionID not exist"(){
         given:
         def request = given(requestSpec)
@@ -157,7 +158,7 @@ class TransactionControllerTest extends Specification {
         response.then().statusCode(404)
         response.getBody().asString() == "Given Transaction ID: 100000 not exist in DataBase"
     }
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     def "change status problem"(){
         given:
         def request = given(requestSpec)

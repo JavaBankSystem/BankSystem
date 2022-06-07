@@ -30,7 +30,7 @@ public class AccountService {
     public List<Transaction> getTransactionsByAccountID(Long ID) {
         return transactionRepository.findAll()
                 .stream()
-                .filter(transaction -> Objects.equals(transaction.getAccountID(), ID))
+                .filter(transaction -> Objects.equals(transaction.getReceiverAccountID(), ID))
                 .collect(Collectors.toList());
     }
 
@@ -38,33 +38,41 @@ public class AccountService {
         return accountRepository.findAccountByAccountID(accountID);
     }
 
-//    public Optional<Account> findAccountByClientId(Long clientId) {
-//        return accountRepository.findAccountByClientID(clientId);
-//    }
+    public Optional<Account> findAccountByUserID(Long clientID) {
+        return accountRepository.findAll().stream().findAny().filter(account -> Objects.equals(account.getClient().getId(), clientID));
+    }
 
-    public ResponseEntity<String> makeTransaction(Long accountID, Long transactionID) {
-        Optional<Account> account = accountRepository.findAccountByAccountID(accountID);
-        if (account.isEmpty()) {
-            log.info("Given AccountID: {} not exist in DataBase", accountID);
-            return ResponseEntity.status(404).body(String.format("Given AccountID: %s not exist in DataBase", accountID));
-        }
+    public ResponseEntity<String> makeTransaction(Long transactionID) {
         Optional<Transaction> transaction = transactionRepository.findTransactionByTransactionID(transactionID);
         if (transaction.isEmpty()) {
             log.info("Given Transaction ID: {} not exist in DataBase", transactionID);
             return ResponseEntity.status(404).body(String.format("Given Transaction ID: %s not exist in DataBase", transactionID));
         }
-        if (!Objects.equals(transaction.get().getAccountID(), accountID)) {
-            log.info("The transaction {} does not apply to the account number: {}", transactionID, accountID);
-            return ResponseEntity.status(404).body(String.format("The transaction %s does not apply to the account number: %s", transactionID, accountID));
+        Optional<Account> sender = Optional.empty();
+        if(transaction.get().getSenderAccountID() != null){
+             sender = accountRepository.findAccountByAccountID(transaction.get().getSenderAccountID());
+            if (sender.isEmpty()) {
+                log.info("AccountID: {} not exist in DataBase", transaction.get().getSenderAccountID());
+                return ResponseEntity.status(404).body(String.format("Given AccountID: %s not exist in DataBase", transaction.get().getSenderAccountID()));
+            }
+        }
+        Optional<Account> receiver = accountRepository.findAccountByAccountID(transaction.get().getReceiverAccountID());
+        if (receiver.isEmpty()) {
+            log.info("AccountID: {} not exist in DataBase", transaction.get().getReceiverAccountID());
+            return ResponseEntity.status(404).body(String.format("Given AccountID: %s not exist in DataBase", transaction.get().getReceiverAccountID()));
         }
         TransactionStatusType status = transaction.get().getActualTransactionStatus().getTransactionStatusType();
         if (status != TransactionStatusType.DONE) {
             log.info("The transaction cannot be recorded. Current status: {}", status);
             return ResponseEntity.status(406).body(String.format("The transaction cannot be recorded. Current status: %s", status));
         }
-        account.get().transaction(transaction.get());
-        accountRepository.save(account.get());
-        return ResponseEntity.ok().body(String.format("Current Operation: %s , Balance after transaction: %s", transaction.get().transactionType, account.get().getBalance()));
+        sender.ifPresent(account -> {
+            account.transaction(transaction.get());
+            accountRepository.save(account);
+        });
+        receiver.get().transaction(transaction.get());
+        accountRepository.save(receiver.get());
+        return ResponseEntity.ok().body(String.format("Transaction %s done", transaction.get().getTransactionID()));
     }
 
     public Account addAccount(Account account) {

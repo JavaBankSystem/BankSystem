@@ -17,6 +17,8 @@ public class DoneProcess implements StatusProcess {
     public Transaction changeStatus(Transaction transaction) {
         log.info("Setting process status to DONE");
         transaction.getTransactionHistory().add(new TransactionStatus(DONE, new Date()));
+        //TODO send message to client
+        //Message.send("Twoj przelew przyjęty do realizacji" + dane...);
         return transaction;
     }
 }

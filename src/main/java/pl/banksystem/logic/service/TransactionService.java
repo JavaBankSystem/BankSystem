@@ -13,8 +13,6 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static pl.banksystem.logic.account.transaction.tracking.TransactionStatusType.PENDING;
-
 @Service
 @Transactional
 @Slf4j
@@ -31,7 +29,7 @@ public class TransactionService {
     public List<Transaction> getTransactionsByAccountID(Long ID) {
         return transactionRepository.findAll()
                 .stream()
-                .filter(transaction -> Objects.equals(transaction.getAccountID(), ID))
+                .filter(transaction -> Objects.equals(transaction.getReceiverAccountID(), ID))
                 .collect(Collectors.toList());
     }
 
@@ -44,7 +42,6 @@ public class TransactionService {
     }
 
     public Transaction addTransaction(Transaction transaction) {
-        transaction.setTransactionHistory(new ArrayList<>(List.of(new TransactionStatus(PENDING, new Date()))));
         transactionRepository.save(transaction);
         return transaction;
     }

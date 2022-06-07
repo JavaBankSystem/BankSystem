@@ -2,7 +2,6 @@ package pl.banksystem.logic.account.transaction;
 
 import lombok.*;
 
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -11,11 +10,10 @@ import java.util.List;
 @Setter
 @Builder
 @NoArgsConstructor
-@EqualsAndHashCode
 @AllArgsConstructor
-
+@EqualsAndHashCode
 @Entity
-@Table(name = "Transaction")
+@Table
 public class Transaction {
 
     @Id
@@ -25,12 +23,14 @@ public class Transaction {
     @OneToMany
     public List<TransactionStatus> transactionHistory;
     private double amount;
+    private Long receiverAccountID;
+    private Long senderAccountID;
     private Long accountID;
     private Long secondAccountID;
     private Date transactionDate = new Date();
 
-    public Transaction(Long accountID, double amount, TransactionType transactionType) {
-        this.accountID = accountID;
+    public Transaction(Long receiverAccountID, double amount, TransactionType transactionType) {
+        this.receiverAccountID = receiverAccountID;
         this.amount = amount;
         this.transactionType = transactionType;
     }
@@ -42,12 +42,22 @@ public class Transaction {
         this.transactionType = transactionType;
     }
 
-    public Transaction(Long accountID, double amount, TransactionType transactionType, List<TransactionStatus> transactionHistory) {
-        this.accountID = accountID;
+    public Transaction(Long receiverAccountID, double amount, TransactionType transactionType, List<TransactionStatus> transactionHistory) {
+        this.receiverAccountID = receiverAccountID;
         this.amount = amount;
         this.transactionType = transactionType;
         this.transactionHistory = transactionHistory;
     }
+
+    public Transaction(Long receiverAccountID, Long senderAccountID, double amount, TransactionType transactionType, List<TransactionStatus> transactionHistory) {
+        this.receiverAccountID = receiverAccountID;
+        this.senderAccountID = senderAccountID;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.transactionHistory = transactionHistory;
+    }
+
+
     public TransactionStatus getActualTransactionStatus() {
         return getTransactionHistory().get(getTransactionHistory().size() - 1);
     }

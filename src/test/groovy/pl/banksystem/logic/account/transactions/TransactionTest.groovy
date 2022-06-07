@@ -1,7 +1,6 @@
 package pl.banksystem.logic.account.transactions
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.ObjectWriter
+
 import pl.banksystem.logic.account.transaction.Transaction
 import pl.banksystem.logic.account.transaction.TransactionType
 import pl.banksystem.logic.account.transaction.tracking.TransactionStatusType
@@ -21,10 +20,9 @@ class TransactionTest extends Specification {
 
         then:
         with(t) {
-//            getTransactionID() == 0
             getActualTransactionStatus().transactionStatusType == TransactionStatusType.PENDING
             getTransactionHistory().size() == 1
-            getAccountID() == accountID
+            getReceiverAccountID() == accountID
             getAmount() == amount
             getTransactionType() == transactionType
         }

@@ -51,9 +51,8 @@ public class AccountController {
         return ResponseEntity.ok(accountService.addAccount(account));
     }
 
-    @PutMapping(value = "/{accountID}/{transactionID}")
-    public ResponseEntity<String> makeTransaction(@PathVariable(name = "accountID") Long accountID,
-                                                  @PathVariable(name = "transactionID") Long transactionID) {
-        return accountService.makeTransaction(accountID, transactionID);
+    @PutMapping(value = "/{transactionID}")
+    public ResponseEntity<String> makeTransaction(@PathVariable(name = "transactionID") Long transactionID) {
+        return accountService.makeTransaction(transactionID);
     }
 }

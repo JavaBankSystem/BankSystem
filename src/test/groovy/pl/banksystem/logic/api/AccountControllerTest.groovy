@@ -7,9 +7,11 @@ import io.restassured.http.Header
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import pl.banksystem.BankSystemApplication
+import pl.banksystem.logic.account.Account
 import pl.banksystem.logic.account.transaction.tracking.TransactionStatusType
 import pl.banksystem.logic.api.providers.AccountProvider
 import pl.banksystem.logic.api.providers.TransactionProvider
+import pl.banksystem.logic.domain.AppUser
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -21,7 +23,6 @@ import static io.restassured.RestAssured.given
 )
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class AccountControllerTest extends Specification {
-
     @Shared
     def requestSpec =
             new RequestSpecBuilder()
@@ -78,12 +79,12 @@ class AccountControllerTest extends Specification {
 
         given:
         def request = given(requestSpec)
-        addSomeAccounts()
+        def addedAccounts = addSomeAccounts()
 
         when:
         def response = request.log().all()
                 .given().header(getTokenHeader())
-                .pathParam("id", "2")
+                .pathParam("id", addedAccounts.get(0).getAccountID())
                 .when().get("/api/v1/account/{id}")
 
         then:
@@ -112,7 +113,7 @@ class AccountControllerTest extends Specification {
 
         given:
         def request = given(requestSpec)
-        addSomeAccounts()
+        def addedAccounts = addSomeAccounts()
         addSomeTransaction()
         def token = getTokenHeader()
         def newStatus = new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(TransactionStatusType.DONE)
@@ -253,16 +254,37 @@ class AccountControllerTest extends Specification {
                 .post("/api/v1/login").getBody().as(Map.class).get("access_token").toString()
         return new Header("Authorization", token)
     }
-
-    void addSomeAccounts() {
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    def "test"() {
         def request = given(requestSpec)
-        def account1 = AccountProvider.account1()
+        given:
+        addUsers()
+        def user1 = request.when().get("/api/v1/users").getBody().as(AppUser[].class)[1]
+        def user2 = request.when().get("/api/v1/users").getBody().as(AppUser[].class)[2]
+        def accounts = addSomeAccounts(user1, user2)
+        accounts.get(0)
+    }
+
+    List<Account> addSomeAccounts(AppUser user1, AppUser user2) {
+        def request = given(requestSpec)
+        def account1 = new Account(new AppUser("chuj","chuj"), 2000)
         request.log().all()
                 .given().body(account1).contentType(ContentType.JSON).header(getTokenHeader())
                 .when().post("/api/v1/account/save").then().statusCode(200)
-        def account2 = AccountProvider.account2()
+        def account2 = new Account(user2, 3000)
         request.log().all()
                 .given().body(account2).contentType(ContentType.JSON).header(getTokenHeader())
                 .when().post("/api/v1/account/save").then().statusCode(200)
+        return request.log().all().when().get("/api/v1/account/all").getBody().as(Account[].class);
+    }
+
+    private void addUsers() {
+        def request = given(requestSpec)
+        request.given()
+                .body(new AppUser("user1", "password")).contentType(ContentType.JSON).header(getTokenHeader())
+                .when().post("/api/v1/users").then().statusCode(201)
+        request.given()
+                .body(new AppUser("user2", "password")).contentType(ContentType.JSON).header(getTokenHeader())
+                .when().post("/api/v1/users").getBody().as(AppUser.class)
     }
 }

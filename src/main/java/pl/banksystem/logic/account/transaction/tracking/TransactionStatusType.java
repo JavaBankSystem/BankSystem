@@ -35,6 +35,9 @@ public enum TransactionStatusType {
         return new Transaction(accountID, amount, transactionType, new ArrayList<>(List.of(new TransactionStatus(PENDING, new Date()))));
     }
 
+    public Transaction addTransaction(Long receiverAccountID, Long senderAccountID, double amount, TransactionType transactionType) {
+        return new Transaction(receiverAccountID, senderAccountID, amount, transactionType, new ArrayList<>(List.of(new TransactionStatus(PENDING, new Date()))));
+    }
 
     public Transaction proccessTransaction(Transaction transaction) {
         List<TransactionStatus> transactionHistory = transaction.getTransactionHistory();

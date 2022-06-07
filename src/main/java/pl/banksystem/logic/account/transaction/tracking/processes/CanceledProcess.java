@@ -18,6 +18,8 @@ public class CanceledProcess implements StatusProcess {
     public Transaction changeStatus(Transaction transaction) {
         log.info("Setting process status to CANCELED");
         transaction.getTransactionHistory().add(new TransactionStatus(CANCELED, new Date()));
+        //TODO send message to client
+        //Message.send("Twoj przelew przyjęty do realizacji" + dane...);
         return transaction;
     }
 }

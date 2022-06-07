@@ -3,20 +3,30 @@ package pl.banksystem.logic.api.providers;
 public class AccountProvider {
 
     public static String account1(){
-        String s = "{\n" +
-                "  \"accountId\" : null,\n" +
-                "  \"clientID\" : 1,\n" +
+        return "{\n" +
+                "  \"accountID\" : null,\n" +
+                "  \"client\" : {\n" +
+                "    \"id\" : 1,\n" +
+                "    \"username\" : \"test\",\n" +
+                "    \"password\" : \"password\",\n" +
+                "    \"roles\" : null,\n" +
+                "    \"accounts\" : null\n" +
+                "  },\n" +
                 "  \"balance\" : 1500.0\n" +
                 "}";
-        return s;
     }
     public static String account2(){
-        String s = "{\n" +
-                "  \"accountId\" : null,\n" +
-                "  \"clientID\" : 2,\n" +
+        return "{\n" +
+                "  \"accountID\" : null,\n" +
+                "  \"client\" : {\n" +
+                "    \"id\" : 2,\n" +
+                "    \"username\" : \"test\",\n" +
+                "    \"password\" : \"password\",\n" +
+                "    \"roles\" : null,\n" +
+                "    \"accounts\" : null\n" +
+                "  },\n" +
                 "  \"balance\" : 1800.0\n" +
                 "}";
-        return s;
     }
 
 
